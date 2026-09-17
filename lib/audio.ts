@@ -1,6 +1,6 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
-import { getAyahAudioUrl } from './quran';
+import { resolveAyahAudioUri } from './downloads';
 
 let player: AudioPlayer | null = null;
 let currentKey: string | null = null;
@@ -13,7 +13,7 @@ async function ensureAudioMode() {
   });
 }
 
-export async function stopAudio(): Promise<void> {
+function clearFinishSub() {
   if (finishSub) {
     try {
       finishSub.remove();
@@ -22,6 +22,22 @@ export async function stopAudio(): Promise<void> {
     }
     finishSub = null;
   }
+}
+
+function bindFinish(
+  next: AudioPlayer,
+  onStatus?: (playing: boolean, finished: boolean) => void,
+) {
+  clearFinishSub();
+  finishSub = next.addListener('playbackStatusUpdate', (status) => {
+    if (status.didJustFinish) {
+      onStatus?.(false, true);
+    }
+  });
+}
+
+export async function stopAudio(): Promise<void> {
+  clearFinishSub();
   if (player) {
     try {
       player.pause();
@@ -43,6 +59,7 @@ export async function playAyah(
   await ensureAudioMode();
 
   if (player && currentKey === key) {
+    bindFinish(player, onStatus);
     if (player.playing) {
       player.pause();
       onStatus?.(false, false);
@@ -54,16 +71,11 @@ export async function playAyah(
   }
 
   await stopAudio();
-  const uri = getAyahAudioUrl(surahId, ayahId);
+  const uri = await resolveAyahAudioUri(surahId, ayahId);
   const next = createAudioPlayer({ uri }, { updateInterval: 500 });
   player = next;
   currentKey = key;
-
-  finishSub = next.addListener('playbackStatusUpdate', (status) => {
-    if (status.didJustFinish) {
-      onStatus?.(false, true);
-    }
-  });
+  bindFinish(next, onStatus);
 
   next.play();
   onStatus?.(true, false);
