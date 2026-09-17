@@ -215,17 +215,29 @@ export default function SettingsScreen() {
       </View>
 
       <Link href="/downloads" asChild>
-        <Pressable style={[styles.about, { backgroundColor: c.card, borderColor: c.border }]}>
+        <Pressable
+          style={StyleSheet.flatten([
+            styles.about,
+            { backgroundColor: c.card, borderColor: c.border },
+          ])}>
           <Ionicons name="download-outline" size={22} color={c.tint} />
-          <Text style={[styles.aboutText, { color: c.text }]}>Manage audio downloads</Text>
+          <Text style={StyleSheet.flatten([styles.aboutText, { color: c.text }])}>
+            Manage audio downloads
+          </Text>
           <Ionicons name="chevron-forward" size={18} color={c.textSecondary} />
         </Pressable>
       </Link>
 
       <Link href="/about" asChild>
-        <Pressable style={[styles.about, { backgroundColor: c.card, borderColor: c.border }]}>
+        <Pressable
+          style={StyleSheet.flatten([
+            styles.about,
+            { backgroundColor: c.card, borderColor: c.border },
+          ])}>
           <Ionicons name="information-circle-outline" size={22} color={c.tint} />
-          <Text style={[styles.aboutText, { color: c.text }]}>About & attributions</Text>
+          <Text style={StyleSheet.flatten([styles.aboutText, { color: c.text }])}>
+            About & attributions
+          </Text>
           <Ionicons name="chevron-forward" size={18} color={c.textSecondary} />
         </Pressable>
       </Link>
