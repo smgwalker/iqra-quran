@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useSettings } from '@/contexts/SettingsContext';
+import { STUDY_NOTES } from '@/lib/study';
+import { TRANSLATIONS } from '@/lib/translations';
 
 export default function AboutScreen() {
   const { colorScheme } = useSettings();
@@ -18,12 +20,13 @@ export default function AboutScreen() {
       </Text>
 
       <Section title="Features" color={c}>
-        Arabic Uthmani text, English translation, surah & juz navigation, continue reading,
-        bookmarks, local search, ayah audio, light/dark theme.
+        Arabic Uthmani text, multiple English translations, surah & juz navigation, continue
+        reading, bookmarks, local search, ayah audio (stream or offline download), continuous
+        playback, word-by-word & tafsir panels, Amiri / Scheherazade fonts, light/dark theme.
       </Section>
 
-      <Section title="Quran text & translation" color={c}>
-        Bundled from{' '}
+      <Section title="Quran text" color={c}>
+        Arabic bundled from{' '}
         <Text style={styles.mono}>quran-json@3.1.2</Text> (
         <Text style={styles.mono}>quran_en.json</Text>
         ).{'\n\n'}
@@ -33,29 +36,56 @@ export default function AboutScreen() {
         </Text>
         {'\n\n'}
         • Arabic (Uthmani): The Noble Qur’an Encyclopedia (quranenc.com){'\n'}
-        • English: Saheeh International (Umm Muhammad), via Tanzil.net
-        (tanzil.net/trans/en.sahih){'\n'}
         • Package license: CC BY-SA 4.0 (risan/quran-json)
       </Section>
 
+      <Section title="English translations" color={c}>
+        {TRANSLATIONS.map((t) => (
+          <Text key={t.id}>
+            • <Text style={{ fontWeight: '700' }}>{t.label}</Text> — {t.author}
+            {'\n'} {t.license}
+            {'\n'} <Text style={styles.mono}>{t.source}</Text>
+            {'\n\n'}
+          </Text>
+        ))}
+        Pickthall & Yusuf Ali are bundled as compact offline JSON under{' '}
+        <Text style={styles.mono}>assets/data/translations/</Text>.
+      </Section>
+
       <Section title="Audio" color={c}>
-        Recitation streamed from everyayah.com — Mishary Rashid Alafasy (128 kbps).{'\n\n'}
+        Recitation from everyayah.com — Mishary Rashid Alafasy (128 kbps).{'\n\n'}
         URL pattern:{'\n'}
         <Text style={styles.mono}>
-          https://everyayah.com/data/Alafasy_128kbps/{SSS}{AAA}.mp3
+          https://everyayah.com/data/Alafasy_128kbps/SSSAAA.mp3
         </Text>
+        {'\n'}(SSS / AAA = zero-padded surah / ayah)
         {'\n\n'}
-        Requires network for playback. Audio is not redistributed with this app.
+        Playback streams by default. Surahs can be downloaded offline via Settings → Manage audio
+        downloads (native only). Local files are preferred when present. Audio is not redistributed
+        with the app bundle.
+      </Section>
+
+      <Section title="Word-by-word & tafsir" color={c}>
+        {STUDY_NOTES.wbwSource}.{'\n'}
+        {STUDY_NOTES.tafsirSource}.{'\n'}
+        {STUDY_NOTES.offlineSubset}.{'\n\n'}
+        Enable in Settings, then tap the book icon on an ayah. Network is required for ayahs outside
+        the offline subset (results are cached on device).
+      </Section>
+
+      <Section title="Arabic fonts" color={c}>
+        • Amiri — SIL Open Font License 1.1{'\n'}
+        • Scheherazade New — SIL Open Font License 1.1{'\n'}
+        Bundled under <Text style={styles.mono}>assets/fonts/</Text> with OFL license texts.
       </Section>
 
       <Section title="Juz divisions" color={c}>
-        Standard 30 Juz (Hafs) boundaries included as local JSON (conventional public
-        division).
+        Standard 30 Juz (Hafs) boundaries included as local JSON (conventional public division).
       </Section>
 
       <Section title="Privacy" color={c}>
-        Bookmarks, last-read position, and settings are stored only on your device via
-        AsyncStorage. No account required.
+        Bookmarks, last-read position, settings, download index, and study cache are stored only on
+        your device via AsyncStorage / app documents. No account required.
       </Section>
 
       <Section title="Disclaimer" color={c}>
@@ -63,7 +93,7 @@ export default function AboutScreen() {
         commercial Qur’an app. Always verify important rulings with trusted scholars.
       </Section>
 
-      <Text style={[styles.footer, { color: c.textSecondary }]}>Iqra v1.0.0 · Expo</Text>
+      <Text style={[styles.footer, { color: c.textSecondary }]}>Iqra v1.1.0 · Expo</Text>
     </ScrollView>
   );
 }

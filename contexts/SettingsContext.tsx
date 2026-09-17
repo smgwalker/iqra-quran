@@ -2,7 +2,12 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { useColorScheme as useSystemScheme } from 'react-native';
 
 import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '@/lib/storage';
-import type { AppSettings, ThemePreference } from '@/lib/types';
+import type {
+  AppSettings,
+  ArabicFontId,
+  ThemePreference,
+  TranslationId,
+} from '@/lib/types';
 
 type SettingsContextValue = {
   settings: AppSettings;
@@ -11,6 +16,11 @@ type SettingsContextValue = {
   setShowTranslation: (v: boolean) => void;
   setArabicFontSize: (v: number) => void;
   setTheme: (v: ThemePreference) => void;
+  setTranslationId: (v: TranslationId) => void;
+  setArabicFontFamily: (v: ArabicFontId) => void;
+  setContinuousPlayback: (v: boolean) => void;
+  setShowWordByWord: (v: boolean) => void;
+  setShowTafsir: (v: boolean) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -43,6 +53,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       setShowTranslation: (showTranslation) => persist({ ...settings, showTranslation }),
       setArabicFontSize: (arabicFontSize) => persist({ ...settings, arabicFontSize }),
       setTheme: (theme) => persist({ ...settings, theme }),
+      setTranslationId: (translationId) => persist({ ...settings, translationId }),
+      setArabicFontFamily: (arabicFontFamily) => persist({ ...settings, arabicFontFamily }),
+      setContinuousPlayback: (continuousPlayback) => persist({ ...settings, continuousPlayback }),
+      setShowWordByWord: (showWordByWord) => persist({ ...settings, showWordByWord }),
+      setShowTafsir: (showTafsir) => persist({ ...settings, showTafsir }),
     }),
     [settings, ready, colorScheme, persist],
   );

@@ -1,9 +1,11 @@
 import { Link } from 'expo-router';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/Colors';
 import { useSettings } from '@/contexts/SettingsContext';
+import { ARABIC_FONTS, getArabicFontFamily } from '@/lib/fonts';
+import { TRANSLATIONS } from '@/lib/translations';
 import type { ThemePreference } from '@/lib/types';
 
 const THEMES: { id: ThemePreference; label: string }[] = [
@@ -15,17 +17,31 @@ const THEMES: { id: ThemePreference; label: string }[] = [
 const FONT_SIZES = [22, 26, 28, 32, 36, 42];
 
 export default function SettingsScreen() {
-  const { colorScheme, settings, setShowTranslation, setArabicFontSize, setTheme } = useSettings();
+  const {
+    colorScheme,
+    settings,
+    setShowTranslation,
+    setArabicFontSize,
+    setTheme,
+    setTranslationId,
+    setArabicFontFamily,
+    setContinuousPlayback,
+    setShowWordByWord,
+    setShowTafsir,
+  } = useSettings();
   const c = Colors[colorScheme];
+  const previewFont = getArabicFontFamily(settings.arabicFontFamily);
 
   return (
-    <View style={[styles.container, { backgroundColor: c.background }]}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: c.background }]}
+      contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
         <View style={styles.row}>
           <View style={styles.rowText}>
-            <Text style={[styles.label, { color: c.text }]}>English translation</Text>
+            <Text style={[styles.label, { color: c.text }]}>Show translation</Text>
             <Text style={[styles.hint, { color: c.textSecondary }]}>
-              Show Saheeh International under each ayah
+              Display English under each ayah
             </Text>
           </View>
           <Switch
@@ -34,6 +50,63 @@ export default function SettingsScreen() {
             trackColor={{ false: c.border, true: c.tint }}
           />
         </View>
+      </View>
+
+      <Text style={[styles.section, { color: c.textSecondary }]}>Translation</Text>
+      <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+        <View style={styles.chips}>
+          {TRANSLATIONS.map((t) => {
+            const active = settings.translationId === t.id;
+            return (
+              <Pressable
+                key={t.id}
+                onPress={() => setTranslationId(t.id)}
+                style={[
+                  styles.chipWide,
+                  {
+                    backgroundColor: active ? c.tint : c.tintSoft,
+                    borderColor: active ? c.tint : c.border,
+                  },
+                ]}>
+                <Text style={{ color: active ? '#fff' : c.text, fontWeight: '600' }}>
+                  {t.shortLabel}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={[styles.hint, { color: c.textSecondary, marginTop: 10 }]}>
+          {TRANSLATIONS.find((t) => t.id === settings.translationId)?.author} ·{' '}
+          {TRANSLATIONS.find((t) => t.id === settings.translationId)?.license}
+        </Text>
+      </View>
+
+      <Text style={[styles.section, { color: c.textSecondary }]}>Arabic font</Text>
+      <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+        <View style={styles.chips}>
+          {ARABIC_FONTS.map((f) => {
+            const active = settings.arabicFontFamily === f.id;
+            return (
+              <Pressable
+                key={f.id}
+                onPress={() => setArabicFontFamily(f.id)}
+                style={[
+                  styles.chipWide,
+                  {
+                    backgroundColor: active ? c.tint : c.tintSoft,
+                    borderColor: active ? c.tint : c.border,
+                  },
+                ]}>
+                <Text style={{ color: active ? '#fff' : c.text, fontWeight: '600' }}>
+                  {f.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={[styles.hint, { color: c.textSecondary, marginTop: 8 }]}>
+          Amiri & Scheherazade New · SIL Open Font License
+        </Text>
       </View>
 
       <Text style={[styles.section, { color: c.textSecondary }]}>Arabic font size</Text>
@@ -65,9 +138,57 @@ export default function SettingsScreen() {
             color: c.arabic,
             fontSize: settings.arabicFontSize,
             lineHeight: settings.arabicFontSize * 1.6,
+            fontFamily: previewFont,
           }}>
           بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
         </Text>
+      </View>
+
+      <Text style={[styles.section, { color: c.textSecondary }]}>Audio</Text>
+      <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+        <View style={styles.row}>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: c.text }]}>Continuous surah playback</Text>
+            <Text style={[styles.hint, { color: c.textSecondary }]}>
+              Auto-advance to the next ayah until the surah ends
+            </Text>
+          </View>
+          <Switch
+            value={settings.continuousPlayback}
+            onValueChange={setContinuousPlayback}
+            trackColor={{ false: c.border, true: c.tint }}
+          />
+        </View>
+      </View>
+
+      <Text style={[styles.section, { color: c.textSecondary }]}>Study panels</Text>
+      <View style={[styles.card, { backgroundColor: c.card, borderColor: c.border }]}>
+        <View style={[styles.row, { marginBottom: 14 }]}>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: c.text }]}>Word-by-word</Text>
+            <Text style={[styles.hint, { color: c.textSecondary }]}>
+              Tap the book icon on an ayah · offline for 1, 112–114
+            </Text>
+          </View>
+          <Switch
+            value={settings.showWordByWord}
+            onValueChange={setShowWordByWord}
+            trackColor={{ false: c.border, true: c.tint }}
+          />
+        </View>
+        <View style={styles.row}>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: c.text }]}>Tafsir (Ibn Kathir)</Text>
+            <Text style={[styles.hint, { color: c.textSecondary }]}>
+              Abridged English · same toggle + book icon
+            </Text>
+          </View>
+          <Switch
+            value={settings.showTafsir}
+            onValueChange={setShowTafsir}
+            trackColor={{ false: c.border, true: c.tint }}
+          />
+        </View>
       </View>
 
       <Text style={[styles.section, { color: c.textSecondary }]}>Theme</Text>
@@ -93,15 +214,22 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      <Link href="/downloads" asChild>
+        <Pressable style={[styles.about, { backgroundColor: c.card, borderColor: c.border }]}>
+          <Ionicons name="download-outline" size={22} color={c.tint} />
+          <Text style={[styles.aboutText, { color: c.text }]}>Manage audio downloads</Text>
+          <Ionicons name="chevron-forward" size={18} color={c.textSecondary} />
+        </Pressable>
+      </Link>
+
       <Link href="/about" asChild>
-        <Pressable
-          style={[styles.about, { backgroundColor: c.card, borderColor: c.border }]}>
+        <Pressable style={[styles.about, { backgroundColor: c.card, borderColor: c.border }]}>
           <Ionicons name="information-circle-outline" size={22} color={c.tint} />
           <Text style={[styles.aboutText, { color: c.text }]}>About & attributions</Text>
           <Ionicons name="chevron-forward" size={18} color={c.textSecondary} />
         </Pressable>
       </Link>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -140,7 +268,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   about: {
-    marginTop: 24,
+    marginTop: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,

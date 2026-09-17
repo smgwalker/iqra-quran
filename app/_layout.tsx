@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { AudioProvider } from '@/contexts/AudioContext';
 import { BookmarksProvider } from '@/contexts/BookmarksContext';
+import { DownloadProvider } from '@/contexts/DownloadContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import Colors from '@/constants/Colors';
 
@@ -21,6 +22,8 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Amiri: require('../assets/fonts/Amiri-Regular.ttf'),
+    ScheherazadeNew: require('../assets/fonts/ScheherazadeNew-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -36,9 +39,11 @@ export default function RootLayout() {
   return (
     <SettingsProvider>
       <BookmarksProvider>
-        <AudioProvider>
-          <RootLayoutNav />
-        </AudioProvider>
+        <DownloadProvider>
+          <AudioProvider>
+            <RootLayoutNav />
+          </AudioProvider>
+        </DownloadProvider>
       </BookmarksProvider>
     </SettingsProvider>
   );
@@ -71,6 +76,13 @@ function RootLayoutNav() {
           options={{
             title: 'Surah',
             headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
+          name="downloads"
+          options={{
+            title: 'Audio downloads',
+            presentation: 'modal',
           }}
         />
         <Stack.Screen

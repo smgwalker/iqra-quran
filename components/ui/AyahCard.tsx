@@ -1,7 +1,10 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+import { StudyPanel } from '@/components/ui/StudyPanel';
 import Colors from '@/constants/Colors';
+import { getArabicFontFamily } from '@/lib/fonts';
+import type { ArabicFontId } from '@/lib/types';
 
 type Props = {
   surahId: number;
@@ -10,6 +13,7 @@ type Props = {
   english: string;
   showTranslation: boolean;
   arabicFontSize: number;
+  arabicFontFamily: ArabicFontId;
   bookmarked: boolean;
   isPlaying: boolean;
   isLoading: boolean;
@@ -17,14 +21,20 @@ type Props = {
   onToggleBookmark: () => void;
   onPlay: () => void;
   highlighted?: boolean;
+  showWordByWord?: boolean;
+  showTafsir?: boolean;
+  onToggleStudy?: () => void;
+  studyExpanded?: boolean;
 };
 
 export function AyahCard({
+  surahId,
   ayahId,
   arabic,
   english,
   showTranslation,
   arabicFontSize,
+  arabicFontFamily,
   bookmarked,
   isPlaying,
   isLoading,
@@ -32,16 +42,23 @@ export function AyahCard({
   onToggleBookmark,
   onPlay,
   highlighted,
+  showWordByWord,
+  showTafsir,
+  onToggleStudy,
+  studyExpanded,
 }: Props) {
   const c = Colors[colorScheme];
+  const fontFamily = getArabicFontFamily(arabicFontFamily);
+  const studyEnabled = Boolean(showWordByWord || showTafsir);
 
   return (
     <View
       style={[
         styles.card,
         {
-          backgroundColor: highlighted ? c.tintSoft : c.card,
-          borderColor: highlighted ? c.tint : c.border,
+          backgroundColor: isPlaying || highlighted ? c.tintSoft : c.card,
+          borderColor: isPlaying || highlighted ? c.tint : c.border,
+          borderWidth: isPlaying ? 1.5 : StyleSheet.hairlineWidth,
         },
       ]}>
       <View style={styles.toolbar}>
@@ -49,6 +66,15 @@ export function AyahCard({
           <Text style={[styles.ayahNum, { color: c.ayahNumber }]}>{ayahId}</Text>
         </View>
         <View style={styles.actions}>
+          {studyEnabled && onToggleStudy ? (
+            <Pressable onPress={onToggleStudy} hitSlop={10} style={styles.iconBtn}>
+              <Ionicons
+                name={studyExpanded ? 'book' : 'book-outline'}
+                size={22}
+                color={studyExpanded ? c.tint : c.textSecondary}
+              />
+            </Pressable>
+          ) : null}
           <Pressable onPress={onPlay} hitSlop={10} style={styles.iconBtn}>
             {isLoading ? (
               <ActivityIndicator size="small" color={c.tint} />
@@ -77,6 +103,7 @@ export function AyahCard({
             color: c.arabic,
             fontSize: arabicFontSize,
             lineHeight: arabicFontSize * 1.85,
+            fontFamily,
           },
         ]}>
         {arabic}
@@ -85,6 +112,16 @@ export function AyahCard({
       {showTranslation ? (
         <Text style={[styles.english, { color: c.translation }]}>{english}</Text>
       ) : null}
+
+      {studyExpanded && studyEnabled ? (
+        <StudyPanel
+          surahId={surahId}
+          ayahId={ayahId}
+          showWordByWord={Boolean(showWordByWord)}
+          showTafsir={Boolean(showTafsir)}
+          colorScheme={colorScheme}
+        />
+      ) : null}
     </View>
   );
 }
@@ -92,7 +129,6 @@ export function AyahCard({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
     padding: 16,
     marginBottom: 12,
   },
