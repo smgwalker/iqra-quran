@@ -8,7 +8,8 @@
     "scheme": "iqra",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.smgwalker.iqra"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +18,9 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.smgwalker.iqra",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",
