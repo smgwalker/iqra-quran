@@ -36,10 +36,8 @@ export type LastRead = {
 
 export type ThemePreference = 'system' | 'light' | 'dark';
 
-/** Bundled English translation keys */
 export type TranslationId = 'sahih' | 'pickthall' | 'yusufali';
 
-/** Bundled Arabic font families (SIL OFL) + system default */
 export type ArabicFontId = 'system' | 'amiri' | 'scheherazade';
 
 export type AppSettings = {
@@ -63,7 +61,7 @@ export type DownloadedSurahMeta = {
 export type DownloadJob = {
   surahId: number;
   status: 'queued' | 'downloading' | 'done' | 'error' | 'cancelled';
-  progress: number; // 0–1
+  progress: number;
   completedAyahs: number;
   totalAyahs: number;
   error?: string;

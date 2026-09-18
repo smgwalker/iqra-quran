@@ -32,7 +32,11 @@ export function SurahRow({
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        { backgroundColor: c.card, borderColor: c.border, opacity: pressed ? 0.85 : 1 },
+        {
+          backgroundColor: c.card,
+          borderBottomColor: c.border,
+          opacity: pressed ? 0.85 : 1,
+        },
       ]}>
       <View style={[styles.badge, { backgroundColor: c.tintSoft }]}>
         <Text style={[styles.badgeText, { color: c.tint }]}>{id}</Text>
@@ -54,15 +58,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderRadius: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    marginBottom: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   badge: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,

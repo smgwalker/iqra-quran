@@ -34,15 +34,16 @@ export function ContinueCard({ surahName, arabicName, ayahId, colorScheme, onPre
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 16,
+    marginHorizontal: 16,
   },
   left: { flex: 1, paddingRight: 12 },
   label: { color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: '600', marginBottom: 4 },
   title: { color: '#fff', fontSize: 17, fontWeight: '700' },
-  arabic: { color: 'rgba(255,255,255,0.95)', fontSize: 20, marginTop: 4, textAlign: 'left' },
+  arabic: { color: 'rgba(255,255,255,0.95)', fontSize: 20, marginTop: 4 },
 });

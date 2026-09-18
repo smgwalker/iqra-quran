@@ -10,6 +10,7 @@ import { useBookmarks } from '@/contexts/BookmarksContext';
 import { useDownloads } from '@/contexts/DownloadContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { getArabicFontFamily } from '@/lib/fonts';
+import { addReadingSeconds, recordReadingDay } from '@/lib/engagement';
 import { getSurah, revelationLabel } from '@/lib/quran';
 import { getTranslationMeta, getVerseTranslation } from '@/lib/translations';
 import type { Verse } from '@/lib/types';
