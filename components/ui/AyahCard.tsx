@@ -2,7 +2,8 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 
 import { StudyPanel } from '@/components/ui/StudyPanel';
-import Colors from '@/constants/Colors';
+import { TajweedText } from '@/components/ui/TajweedText';
+import { Mushaf } from '@/constants/MushafTheme';
 import { getArabicFontFamily } from '@/lib/fonts';
 import type { ArabicFontId } from '@/lib/types';
 
@@ -25,6 +26,8 @@ type Props = {
   showTafsir?: boolean;
   onToggleStudy?: () => void;
   studyExpanded?: boolean;
+  /** Alternating cream row (even index = alt) */
+  altRow?: boolean;
 };
 
 export function AyahCard({
@@ -46,118 +49,147 @@ export function AyahCard({
   showTafsir,
   onToggleStudy,
   studyExpanded,
+  altRow,
 }: Props) {
-  const c = Colors[colorScheme];
   const fontFamily = getArabicFontFamily(arabicFontFamily);
   const studyEnabled = Boolean(showWordByWord || showTafsir);
+  const bg = isPlaying || highlighted ? '#E8F0E4' : altRow ? Mushaf.creamAlt : Mushaf.cream;
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: isPlaying || highlighted ? c.tintSoft : c.card,
-          borderColor: isPlaying || highlighted ? c.tint : c.border,
-          borderWidth: isPlaying ? 1.5 : StyleSheet.hairlineWidth,
-        },
-      ]}>
-      <View style={styles.toolbar}>
-        <View style={[styles.ayahBadge, { borderColor: c.ayahNumber }]}>
-          <Text style={[styles.ayahNum, { color: c.ayahNumber }]}>{ayahId}</Text>
+    <View style={[styles.row, { backgroundColor: bg, borderBottomColor: Mushaf.hairline }]}>
+      <View style={styles.sealCol}>
+        <View style={[styles.seal, ayahId === 1 && styles.sealFirst]}>
+          {ayahId === 1 ? <View style={styles.sealFlourish} /> : null}
+          <View style={styles.sealInner}>
+            <Text style={styles.sealNum}>{ayahId}</Text>
+          </View>
         </View>
-        <View style={styles.actions}>
-          {studyEnabled && onToggleStudy ? (
-            <Pressable onPress={onToggleStudy} hitSlop={10} style={styles.iconBtn}>
-              <Ionicons
-                name={studyExpanded ? 'book' : 'book-outline'}
-                size={22}
-                color={studyExpanded ? c.tint : c.textSecondary}
-              />
-            </Pressable>
-          ) : null}
-          <Pressable onPress={onPlay} hitSlop={10} style={styles.iconBtn}>
+        <View style={styles.quietActions}>
+          <Pressable onPress={onPlay} hitSlop={8} style={styles.quietBtn}>
             {isLoading ? (
-              <ActivityIndicator size="small" color={c.tint} />
+              <ActivityIndicator size="small" color={Mushaf.forest} />
             ) : (
               <Ionicons
-                name={isPlaying ? 'pause-circle' : 'play-circle'}
-                size={28}
-                color={c.tint}
+                name={isPlaying ? 'pause' : 'play'}
+                size={14}
+                color={isPlaying ? Mushaf.forest : Mushaf.goldDark}
               />
             )}
           </Pressable>
-          <Pressable onPress={onToggleBookmark} hitSlop={10} style={styles.iconBtn}>
+          <Pressable onPress={onToggleBookmark} hitSlop={8} style={styles.quietBtn}>
             <Ionicons
               name={bookmarked ? 'bookmark' : 'bookmark-outline'}
-              size={22}
-              color={bookmarked ? c.accent : c.textSecondary}
+              size={14}
+              color={bookmarked ? Mushaf.goldDark : Mushaf.hairline}
             />
           </Pressable>
+          {studyEnabled && onToggleStudy ? (
+            <Pressable onPress={onToggleStudy} hitSlop={8} style={styles.quietBtn}>
+              <Ionicons
+                name={studyExpanded ? 'book' : 'book-outline'}
+                size={14}
+                color={studyExpanded ? Mushaf.forest : Mushaf.hairline}
+              />
+            </Pressable>
+          ) : null}
         </View>
       </View>
 
-      <Text
-        style={[
-          styles.arabic,
-          {
-            color: c.arabic,
-            fontSize: arabicFontSize,
-            lineHeight: arabicFontSize * 1.85,
-            fontFamily,
-          },
-        ]}>
-        {arabic}
-      </Text>
-
-      {showTranslation ? (
-        <Text style={[styles.english, { color: c.translation }]}>{english}</Text>
-      ) : null}
-
-      {studyExpanded && studyEnabled ? (
-        <StudyPanel
+      <View style={styles.body}>
+        <TajweedText
           surahId={surahId}
           ayahId={ayahId}
-          showWordByWord={Boolean(showWordByWord)}
-          showTafsir={Boolean(showTafsir)}
-          colorScheme={colorScheme}
+          arabic={arabic}
+          fontSize={arabicFontSize}
+          fontFamily={fontFamily}
         />
-      ) : null}
+
+        {showTranslation ? <Text style={styles.english}>{english}</Text> : null}
+
+        {studyExpanded && studyEnabled ? (
+          <StudyPanel
+            surahId={surahId}
+            ayahId={ayahId}
+            showWordByWord={Boolean(showWordByWord)}
+            showTafsir={Boolean(showTafsir)}
+            colorScheme={colorScheme}
+          />
+        ) : null}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-  },
-  toolbar: {
+  row: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: 10,
   },
-  ayahBadge: {
-    minWidth: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1.5,
+  sealCol: {
+    width: 44,
+    alignItems: 'center',
+    paddingTop: 4,
+  },
+  seal: {
+    width: 36,
+    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
   },
-  ayahNum: { fontSize: 13, fontWeight: '700' },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  iconBtn: { padding: 2 },
-  arabic: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    fontWeight: '500',
+  sealFirst: {
+    marginTop: 6,
+  },
+  sealFlourish: {
+    position: 'absolute',
+    top: -8,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: Mushaf.gold,
+    borderWidth: 1,
+    borderColor: Mushaf.goldDark,
+  },
+  sealInner: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 2,
+    borderColor: Mushaf.sealRing,
+    backgroundColor: Mushaf.sealFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // inner ring
+    shadowColor: Mushaf.goldDark,
+    shadowOpacity: 0.25,
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  sealNum: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Mushaf.arabic,
+  },
+  quietActions: {
+    marginTop: 8,
+    gap: 6,
+    alignItems: 'center',
+  },
+  quietBtn: {
+    padding: 2,
+    opacity: 0.85,
+  },
+  body: {
+    flex: 1,
+    minWidth: 0,
   },
   english: {
-    marginTop: 14,
-    fontSize: 15,
-    lineHeight: 24,
+    marginTop: 10,
+    fontSize: 14,
+    lineHeight: 22,
+    color: Mushaf.translation,
+    textAlign: 'left',
   },
 });

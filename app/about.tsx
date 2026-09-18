@@ -73,6 +73,13 @@ export default function AboutScreen() {
         the offline subset (results are cached on device).
       </Section>
 
+      <Section title="Tajweed colors" color={c}>
+        Reader legend: Qalqala, Iqlab, Idgham, Ikhfa'a, Ghunna.{'\n\n'}
+        Bundled annotations for surahs 1, 112–114 from Quran.com{' '}
+        <Text style={styles.mono}>uthmani_tajweed</Text>. Other surahs use a lightweight
+        heuristic (demo). See <Text style={styles.mono}>assets/data/SOURCES.md</Text>.
+      </Section>
+
       <Section title="Arabic fonts" color={c}>
         • Amiri — SIL Open Font License 1.1{'\n'}
         • Scheherazade New — SIL Open Font License 1.1{'\n'}

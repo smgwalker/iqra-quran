@@ -33,3 +33,16 @@
 - **Amiri** — `assets/fonts/Amiri-Regular.ttf` (+ `OFL-Amiri.txt`)
 - **Scheherazade New** — `assets/fonts/ScheherazadeNew-Regular.ttf` (+ `OFL-ScheherazadeNew.txt`)
 - Upstream: [google/fonts](https://github.com/google/fonts) OFL directories
+
+## Tajweed coloring (reader)
+- **Bundled subset:** `tajweed/subset.json` for surahs **1 (Al-Fatihah), 112, 113, 114**
+- **Source:** Quran.com API v4 `uthmani_tajweed` (`https://api.quran.com/api/v4/quran/verses/uthmani_tajweed?chapter_number=N`)
+- **Processing:** HTML `<tajweed class=…>` tags mapped to legend rules only:
+  - `qalaqah` → Qalqala (green)
+  - `iqlab` → Iqlab (blue)
+  - `idgham_*` → Idgham (purple)
+  - `ikhafa*` → Ikhfa'a (red)
+  - `ghunnah` → Ghunna (orange)
+- Other API classes (`ham_wasl`, `laam_shamsiyah`, `madda_*`, etc.) are left uncolored so the on-screen legend matches the reference.
+- **Fallback:** For all other surahs, a lightweight heuristic colors noon-saakin / tanween (ikhfa, idgham, iqlab), qalqala+sukoon, and noon/meem mushaddad (ghunna). This is a demo approximation — not a full tajweed engine.
+- **License note:** Annotations derived from Quran.com public API content for offline demo; not scraped from commercial mushaf apps.

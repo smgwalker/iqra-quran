@@ -1,27 +1,29 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View, ViewToken } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, StyleSheet, Text, View, ViewToken } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 import { AyahCard } from '@/components/ui/AyahCard';
-import Colors from '@/constants/Colors';
+import { ReaderTopBar } from '@/components/ui/ReaderTopBar';
+import { SurahBanner } from '@/components/ui/SurahBanner';
+import { TajweedLegend } from '@/components/ui/TajweedLegend';
+import { Mushaf } from '@/constants/MushafTheme';
 import { useAudio } from '@/contexts/AudioContext';
 import { useBookmarks } from '@/contexts/BookmarksContext';
-import { useDownloads } from '@/contexts/DownloadContext';
 import { useSettings } from '@/contexts/SettingsContext';
 import { getArabicFontFamily } from '@/lib/fonts';
-import { addReadingSeconds, recordReadingDay } from '@/lib/engagement';
-import { getSurah, revelationLabel } from '@/lib/quran';
-import { getTranslationMeta, getVerseTranslation } from '@/lib/translations';
+import { getSurah } from '@/lib/quran';
+import { getVerseTranslation } from '@/lib/translations';
 import type { Verse } from '@/lib/types';
 
 export default function SurahReaderScreen() {
   const { id, ayah } = useLocalSearchParams<{ id: string; ayah?: string }>();
+  const router = useRouter();
   const surahId = Number(id);
   const focusAyah = ayah ? Number(ayah) : undefined;
   const surah = getSurah(surahId);
 
-  const { colorScheme, settings, setShowTranslation } = useSettings();
+  const { colorScheme, settings, setTranslationId } = useSettings();
   const { isBookmarked, toggleBookmark, setLastReadPosition } = useBookmarks();
   const {
     play,
@@ -32,19 +34,14 @@ export default function SurahReaderScreen() {
     isCurrent,
     playingAyahId,
     playingSurahId,
-    continuousActive,
   } = useAudio();
-  const { isDownloaded, enqueue, supported } = useDownloads();
-  const c = Colors[colorScheme];
   const listRef = useRef<FlatList<Verse>>(null);
   const lastSaved = useRef<string>('');
   const [expandedStudy, setExpandedStudy] = useState<number | null>(null);
   const arabicFont = getArabicFontFamily(settings.arabicFontFamily);
-  const translationMeta = getTranslationMeta(settings.translationId);
 
-  useLayoutEffect(() => {
-    // title set via Stack.Screen below
-  }, []);
+  const prevSurah = surahId > 1 ? getSurah(surahId - 1) : undefined;
+  const nextSurah = surahId < 114 ? getSurah(surahId + 1) : undefined;
 
   useEffect(() => {
     if (!surah || !focusAyah) return;
@@ -55,7 +52,6 @@ export default function SurahReaderScreen() {
     return () => clearTimeout(t);
   }, [surah, focusAyah]);
 
-  // Auto-scroll to currently playing ayah during continuous playback
   useEffect(() => {
     if (!surah || playingSurahId !== surah.id || !playingAyahId) return;
     const index = Math.max(0, playingAyahId - 1);
@@ -98,50 +94,63 @@ export default function SurahReaderScreen() {
   );
 
   const playSurahFromStart = useCallback(async () => {
+    if (isPlaying && playingSurahId === surahId) {
+      await stop();
+      return;
+    }
     await play(surahId, 1, { continuous: true });
-  }, [play, surahId]);
+  }, [isPlaying, play, playingSurahId, stop, surahId]);
+
+  const goPrev = useCallback(() => {
+    if (prevSurah) router.replace(`/surah/${prevSurah.id}`);
+  }, [prevSurah, router]);
+
+  const goNext = useCallback(() => {
+    if (nextSurah) router.replace(`/surah/${nextSurah.id}`);
+  }, [nextSurah, router]);
 
   if (!surah) {
     return (
-      <View style={[styles.missing, { backgroundColor: c.background }]}>
-        <Text style={{ color: c.text }}>Surah not found.</Text>
+      <View style={[styles.missing, { backgroundColor: Mushaf.cream }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="light" />
+        <Text style={{ color: Mushaf.arabic }}>Surah not found.</Text>
       </View>
     );
   }
 
-  const downloaded = isDownloaded(surah.id);
+  const surahPlaying = isPlaying && playingSurahId === surah.id;
+  const surahLoading = isLoading && playingSurahId === surah.id && playingAyahId === 1 && !isPlaying;
 
   return (
-    <View style={[styles.container, { backgroundColor: c.background }]}>
-      <Stack.Screen
-        options={{
-          title: surah.transliteration,
-          headerRight: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginRight: 4 }}>
-              {isPlaying && playingSurahId === surah.id ? (
-                <Pressable onPress={() => void stop()} hitSlop={10}>
-                  <Ionicons name="stop-circle-outline" size={24} color={c.tint} />
-                </Pressable>
-              ) : null}
-              <Pressable
-                onPress={() => setShowTranslation(!settings.showTranslation)}
-                hitSlop={10}>
-                <Ionicons
-                  name={settings.showTranslation ? 'text' : 'text-outline'}
-                  size={22}
-                  color={c.tint}
-                />
-              </Pressable>
-            </View>
-          ),
-        }}
+    <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="light" />
+
+      <ReaderTopBar
+        translationId={settings.translationId}
+        onSelectTranslation={setTranslationId}
+        isPlaying={surahPlaying}
+        isLoading={surahLoading || (isLoading && playingSurahId === surah.id)}
+        onTogglePlay={() => void playSurahFromStart()}
+      />
+
+      <SurahBanner
+        englishName={surah.transliteration}
+        arabicName={surah.name}
+        arabicFontFamily={arabicFont}
+        onPrev={goPrev}
+        onNext={goNext}
+        hasPrev={Boolean(prevSurah)}
+        hasNext={Boolean(nextSurah)}
       />
 
       <FlatList
         ref={listRef}
+        style={styles.list}
         data={surah.verses}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={styles.listContent}
         initialNumToRender={12}
         maxToRenderPerBatch={16}
         windowSize={9}
@@ -153,71 +162,22 @@ export default function SurahReaderScreen() {
           }, 400);
         }}
         ListHeaderComponent={
-          <View style={[styles.header, { backgroundColor: c.card, borderColor: c.border }]}>
-            <Text style={[styles.arabicName, { color: c.arabic, fontFamily: arabicFont }]}>
-              {surah.name}
-            </Text>
-            <Text style={[styles.enName, { color: c.text }]}>
-              {surah.transliteration} — {surah.translation}
-            </Text>
-            <Text style={[styles.meta, { color: c.textSecondary }]}>
-              {revelationLabel(surah.type)} · {surah.total_verses} ayahs · {translationMeta.shortLabel}
-            </Text>
-            {surah.id !== 1 && surah.id !== 9 ? (
+          surah.id !== 1 && surah.id !== 9 ? (
+            <View style={styles.basmalaWrap}>
               <Text
                 style={[
                   styles.basmala,
                   {
-                    color: c.arabic,
-                    fontSize: Math.min(settings.arabicFontSize, 30),
+                    fontSize: Math.min(settings.arabicFontSize, 28),
                     fontFamily: arabicFont,
                   },
                 ]}>
                 بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
               </Text>
-            ) : null}
-
-            <View style={styles.headerActions}>
-              <Pressable
-                onPress={() => void playSurahFromStart()}
-                style={[styles.headerBtn, { backgroundColor: c.tint }]}>
-                <Ionicons name="play" size={16} color="#fff" />
-                <Text style={styles.headerBtnText}>Play surah</Text>
-              </Pressable>
-              {supported ? (
-                <Pressable
-                  onPress={() => (downloaded ? undefined : enqueue(surah.id))}
-                  disabled={downloaded}
-                  style={[
-                    styles.headerBtn,
-                    {
-                      backgroundColor: downloaded ? c.tintSoft : c.card,
-                      borderWidth: 1,
-                      borderColor: c.tint,
-                    },
-                  ]}>
-                  <Ionicons
-                    name={downloaded ? 'checkmark-circle' : 'download-outline'}
-                    size={16}
-                    color={c.tint}
-                  />
-                  <Text style={[styles.headerBtnText, { color: c.tint }]}>
-                    {downloaded ? 'Downloaded' : 'Download'}
-                  </Text>
-                </Pressable>
-              ) : null}
             </View>
-
-            {isPlaying && playingAyahId && playingSurahId === surah.id ? (
-              <Text style={[styles.nowPlaying, { color: c.tint }]}>
-                Playing ayah {playingAyahId}
-                {continuousActive || settings.continuousPlayback ? ' · continuous' : ''} · Alafasy
-                {downloaded ? ' · offline' : ''}
-              </Text>
-            ) : null}
-          </View>
+          ) : null
         }
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <AyahCard
             surahId={surah.id}
             ayahId={item.id}
@@ -231,6 +191,7 @@ export default function SurahReaderScreen() {
             isLoading={isCurrent(surah.id, item.id) && isLoading}
             colorScheme={colorScheme}
             highlighted={focusAyah === item.id}
+            altRow={index % 2 === 1}
             showWordByWord={settings.showWordByWord}
             showTafsir={settings.showTafsir}
             studyExpanded={expandedStudy === item.id}
@@ -242,45 +203,40 @@ export default function SurahReaderScreen() {
           />
         )}
       />
+
+      <TajweedLegend />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  missing: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list: { padding: 16, paddingBottom: 40 },
-  header: {
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: 18,
-    marginBottom: 16,
-    alignItems: 'center',
+  container: {
+    flex: 1,
+    backgroundColor: Mushaf.cream,
   },
-  arabicName: { fontSize: 32, fontWeight: '700', writingDirection: 'rtl' },
-  enName: { fontSize: 16, fontWeight: '600', marginTop: 8, textAlign: 'center' },
-  meta: { fontSize: 13, marginTop: 4 },
+  missing: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  list: {
+    flex: 1,
+    backgroundColor: Mushaf.cream,
+  },
+  listContent: {
+    paddingBottom: 12,
+  },
+  basmalaWrap: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: Mushaf.creamSoft,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Mushaf.hairline,
+  },
   basmala: {
-    marginTop: 18,
     textAlign: 'center',
     writingDirection: 'rtl',
     fontWeight: '500',
+    color: Mushaf.arabic,
   },
-  headerActions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginTop: 16,
-    justifyContent: 'center',
-  },
-  headerBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  headerBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
-  nowPlaying: { marginTop: 12, fontSize: 12, fontWeight: '600' },
 });
