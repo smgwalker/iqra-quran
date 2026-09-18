@@ -41,6 +41,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9bdd8de4-27c9-40d0-aac6-cc5fdf3aa6d7"
+      }
+    },
+    "owner": "abdulegit"
   }
 }

@@ -32,3 +32,8 @@ npm-debug.*
 web-build/
 yarn-debug.*
 yarn-error.*
+
+# local signing secrets
+credentials/
+*.keystore
+*.jks
