@@ -4,6 +4,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { AyahCard } from '@/components/ui/AyahCard';
+import { ReadingModeControl } from '@/components/ui/ReadingModeControl';
 import { ReaderTopBar } from '@/components/ui/ReaderTopBar';
 import { SurahBanner } from '@/components/ui/SurahBanner';
 import { TajweedLegend } from '@/components/ui/TajweedLegend';
@@ -23,7 +24,7 @@ export default function SurahReaderScreen() {
   const focusAyah = ayah ? Number(ayah) : undefined;
   const surah = getSurah(surahId);
 
-  const { colorScheme, settings, setTranslationId } = useSettings();
+  const { colorScheme, settings, setTranslationId, setReadingViewMode } = useSettings();
   const { isBookmarked, toggleBookmark, setLastReadPosition } = useBookmarks();
   const {
     play,
@@ -145,6 +146,11 @@ export default function SurahReaderScreen() {
         hasNext={Boolean(nextSurah)}
       />
 
+      <ReadingModeControl
+        mode={settings.readingViewMode}
+        onChange={setReadingViewMode}
+      />
+
       <FlatList
         ref={listRef}
         style={styles.list}
@@ -183,7 +189,7 @@ export default function SurahReaderScreen() {
             ayahId={item.id}
             arabic={item.ar}
             english={getVerseTranslation(surah.id, item.id, settings.translationId)}
-            showTranslation={settings.showTranslation}
+            viewMode={settings.readingViewMode}
             arabicFontSize={settings.arabicFontSize}
             arabicFontFamily={settings.arabicFontFamily}
             bookmarked={isBookmarked(surah.id, item.id)}
@@ -192,7 +198,6 @@ export default function SurahReaderScreen() {
             colorScheme={colorScheme}
             highlighted={focusAyah === item.id}
             altRow={index % 2 === 1}
-            showWordByWord={settings.showWordByWord}
             showTafsir={settings.showTafsir}
             studyExpanded={expandedStudy === item.id}
             onToggleStudy={() =>

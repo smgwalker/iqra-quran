@@ -5,6 +5,7 @@ import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '@/lib/storage';
 import type {
   AppSettings,
   ArabicFontId,
+  ReadingViewMode,
   ThemePreference,
   TranslationId,
 } from '@/lib/types';
@@ -21,6 +22,7 @@ type SettingsContextValue = {
   setContinuousPlayback: (v: boolean) => void;
   setShowWordByWord: (v: boolean) => void;
   setShowTafsir: (v: boolean) => void;
+  setReadingViewMode: (v: ReadingViewMode) => void;
 };
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -50,14 +52,33 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       settings,
       ready,
       colorScheme,
-      setShowTranslation: (showTranslation) => persist({ ...settings, showTranslation }),
+      setShowTranslation: (showTranslation) => {
+        let readingViewMode = settings.readingViewMode;
+        if (showTranslation) readingViewMode = 'translation';
+        else if (settings.readingViewMode === 'translation') readingViewMode = 'arabic';
+        persist({ ...settings, showTranslation, readingViewMode });
+      },
       setArabicFontSize: (arabicFontSize) => persist({ ...settings, arabicFontSize }),
       setTheme: (theme) => persist({ ...settings, theme }),
       setTranslationId: (translationId) => persist({ ...settings, translationId }),
       setArabicFontFamily: (arabicFontFamily) => persist({ ...settings, arabicFontFamily }),
       setContinuousPlayback: (continuousPlayback) => persist({ ...settings, continuousPlayback }),
-      setShowWordByWord: (showWordByWord) => persist({ ...settings, showWordByWord }),
+      setShowWordByWord: (showWordByWord) => {
+        let readingViewMode = settings.readingViewMode;
+        if (showWordByWord) readingViewMode = 'wordByWord';
+        else if (settings.readingViewMode === 'wordByWord') {
+          readingViewMode = settings.showTranslation ? 'translation' : 'arabic';
+        }
+        persist({ ...settings, showWordByWord, readingViewMode });
+      },
       setShowTafsir: (showTafsir) => persist({ ...settings, showTafsir }),
+      setReadingViewMode: (readingViewMode) =>
+        persist({
+          ...settings,
+          readingViewMode,
+          showTranslation: readingViewMode === 'translation',
+          showWordByWord: readingViewMode === 'wordByWord',
+        }),
     }),
     [settings, ready, colorScheme, persist],
   );

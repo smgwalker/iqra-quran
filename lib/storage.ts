@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AppSettings, Bookmark, DownloadedSurahMeta, LastRead } from './types';
+import type { AppSettings, Bookmark, DownloadedSurahMeta, LastRead, ReadingViewMode } from './types';
 
 const KEYS = {
   bookmarks: '@iqra/bookmarks',
@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   continuousPlayback: true,
   showWordByWord: false,
   showTafsir: false,
+  readingViewMode: 'translation',
 };
 
 export async function loadBookmarks(): Promise<Bookmark[]> {
@@ -46,11 +47,26 @@ export async function saveLastRead(last: LastRead): Promise<void> {
   await AsyncStorage.setItem(KEYS.lastRead, JSON.stringify(last));
 }
 
+function inferReadingViewMode(partial: Partial<AppSettings>): ReadingViewMode {
+  if (partial.readingViewMode) return partial.readingViewMode;
+  if (partial.showWordByWord) return 'wordByWord';
+  if (partial.showTranslation === false) return 'arabic';
+  return 'translation';
+}
+
 export async function loadSettings(): Promise<AppSettings> {
   try {
     const raw = await AsyncStorage.getItem(KEYS.settings);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...(JSON.parse(raw) as Partial<AppSettings>) };
+    const partial = JSON.parse(raw) as Partial<AppSettings>;
+    const merged: AppSettings = { ...DEFAULT_SETTINGS, ...partial };
+    merged.readingViewMode = inferReadingViewMode(partial);
+    // Keep boolean flags aligned with the mode used by the reader.
+    if (partial.readingViewMode) {
+      merged.showTranslation = merged.readingViewMode === 'translation';
+      merged.showWordByWord = merged.readingViewMode === 'wordByWord';
+    }
+    return merged;
   } catch {
     return DEFAULT_SETTINGS;
   }

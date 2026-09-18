@@ -40,6 +40,9 @@ export type TranslationId = 'sahih' | 'pickthall' | 'yusufali';
 
 export type ArabicFontId = 'system' | 'amiri' | 'scheherazade';
 
+/** Surah reader layout: Arabic only, translation under ayah, or word-by-word glosses. */
+export type ReadingViewMode = 'arabic' | 'translation' | 'wordByWord';
+
 export type AppSettings = {
   showTranslation: boolean;
   arabicFontSize: number;
@@ -49,6 +52,7 @@ export type AppSettings = {
   continuousPlayback: boolean;
   showWordByWord: boolean;
   showTafsir: boolean;
+  readingViewMode: ReadingViewMode;
 };
 
 export type DownloadedSurahMeta = {

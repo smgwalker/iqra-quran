@@ -5,14 +5,14 @@ import { StudyPanel } from '@/components/ui/StudyPanel';
 import { TajweedText } from '@/components/ui/TajweedText';
 import { Mushaf } from '@/constants/MushafTheme';
 import { getArabicFontFamily } from '@/lib/fonts';
-import type { ArabicFontId } from '@/lib/types';
+import type { ArabicFontId, ReadingViewMode } from '@/lib/types';
 
 type Props = {
   surahId: number;
   ayahId: number;
   arabic: string;
   english: string;
-  showTranslation: boolean;
+  viewMode: ReadingViewMode;
   arabicFontSize: number;
   arabicFontFamily: ArabicFontId;
   bookmarked: boolean;
@@ -22,7 +22,7 @@ type Props = {
   onToggleBookmark: () => void;
   onPlay: () => void;
   highlighted?: boolean;
-  showWordByWord?: boolean;
+  /** Optional tafsir via book icon (settings); WBW is always shown in wordByWord mode. */
   showTafsir?: boolean;
   onToggleStudy?: () => void;
   studyExpanded?: boolean;
@@ -35,7 +35,7 @@ export function AyahCard({
   ayahId,
   arabic,
   english,
-  showTranslation,
+  viewMode,
   arabicFontSize,
   arabicFontFamily,
   bookmarked,
@@ -45,14 +45,15 @@ export function AyahCard({
   onToggleBookmark,
   onPlay,
   highlighted,
-  showWordByWord,
   showTafsir,
   onToggleStudy,
   studyExpanded,
   altRow,
 }: Props) {
   const fontFamily = getArabicFontFamily(arabicFontFamily);
-  const studyEnabled = Boolean(showWordByWord || showTafsir);
+  const showTranslation = viewMode === 'translation';
+  const showWbwInline = viewMode === 'wordByWord';
+  const tafsirToggle = Boolean(showTafsir && onToggleStudy);
   const bg = isPlaying || highlighted ? '#E8F0E4' : altRow ? Mushaf.creamAlt : Mushaf.cream;
 
   return (
@@ -83,7 +84,7 @@ export function AyahCard({
               color={bookmarked ? Mushaf.goldDark : Mushaf.hairline}
             />
           </Pressable>
-          {studyEnabled && onToggleStudy ? (
+          {tafsirToggle ? (
             <Pressable onPress={onToggleStudy} hitSlop={8} style={styles.quietBtn}>
               <Ionicons
                 name={studyExpanded ? 'book' : 'book-outline'}
@@ -106,12 +107,22 @@ export function AyahCard({
 
         {showTranslation ? <Text style={styles.english}>{english}</Text> : null}
 
-        {studyExpanded && studyEnabled ? (
+        {showWbwInline ? (
           <StudyPanel
             surahId={surahId}
             ayahId={ayahId}
-            showWordByWord={Boolean(showWordByWord)}
-            showTafsir={Boolean(showTafsir)}
+            showWordByWord
+            showTafsir={Boolean(showTafsir && studyExpanded)}
+            colorScheme={colorScheme}
+          />
+        ) : null}
+
+        {!showWbwInline && studyExpanded && showTafsir ? (
+          <StudyPanel
+            surahId={surahId}
+            ayahId={ayahId}
+            showWordByWord={false}
+            showTafsir
             colorScheme={colorScheme}
           />
         ) : null}
@@ -161,7 +172,6 @@ const styles = StyleSheet.create({
     backgroundColor: Mushaf.sealFill,
     alignItems: 'center',
     justifyContent: 'center',
-    // inner ring
     shadowColor: Mushaf.goldDark,
     shadowOpacity: 0.25,
     shadowRadius: 1,
