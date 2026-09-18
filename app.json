@@ -2,7 +2,7 @@
   "expo": {
     "name": "Iqra",
     "slug": "iqra-quran",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "iqra",
@@ -13,14 +13,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0D9488",
+        "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.smgwalker.iqra",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "bundler": "metro",
@@ -33,8 +33,9 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0D9488"
+          "backgroundColor": "#FFFFFF"
         }
       ],
       "expo-audio"
@@ -47,6 +48,11 @@
         "projectId": "9bdd8de4-27c9-40d0-aac6-cc5fdf3aa6d7"
       }
     },
-    "owner": "abdulegit"
+    "owner": "abdulegit",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    }
   }
 }

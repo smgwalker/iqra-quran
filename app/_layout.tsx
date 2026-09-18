@@ -10,6 +10,7 @@ import { AudioProvider } from '@/contexts/AudioContext';
 import { BookmarksProvider } from '@/contexts/BookmarksContext';
 import { DownloadProvider } from '@/contexts/DownloadContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
+import { BrandSplash } from '@/components/ui/BrandSplash';
 import { loadOnboardingComplete } from '@/lib/engagement';
 
 export { ErrorBoundary } from 'expo-router';
@@ -31,11 +32,18 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+  const [showBrand, setShowBrand] = useState(true);
+
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
+    if (!loaded) return;
+    SplashScreen.hideAsync();
+    const t = setTimeout(() => setShowBrand(false), 1600);
+    return () => clearTimeout(t);
   }, [loaded]);
 
-  if (!loaded) return null;
+  if (!loaded || showBrand) {
+    return <BrandSplash />;
+  }
 
   return (
     <SettingsProvider>
