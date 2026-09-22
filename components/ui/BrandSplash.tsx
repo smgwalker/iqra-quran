@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 export function BrandSplash() {
   return (
@@ -8,7 +8,6 @@ export function BrandSplash() {
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Iqra</Text>
     </View>
   );
 }
@@ -16,19 +15,12 @@ export function BrandSplash() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F7F4EC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 160,
-    height: 160,
-  },
-  title: {
-    marginTop: 16,
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#111111',
-    letterSpacing: 0.5,
+    width: 220,
+    height: 220,
   },
 });
