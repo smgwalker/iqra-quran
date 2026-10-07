@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import Colors from '@/constants/Colors';
 import { AudioProvider } from '@/contexts/AudioContext';
+import { AzkarProvider } from '@/contexts/AzkarContext';
 import { BookmarksProvider } from '@/contexts/BookmarksContext';
 import { DownloadProvider } from '@/contexts/DownloadContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
@@ -50,7 +51,9 @@ export default function RootLayout() {
       <BookmarksProvider>
         <DownloadProvider>
           <AudioProvider>
-            <RootLayoutNav />
+            <AzkarProvider>
+              <RootLayoutNav />
+            </AzkarProvider>
           </AudioProvider>
         </DownloadProvider>
       </BookmarksProvider>
@@ -114,6 +117,27 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
+          name="azkar/index"
+          options={{
+            title: 'Dua & Azkar',
+            headerBackTitle: 'Home',
+          }}
+        />
+        <Stack.Screen
+          name="azkar/[category]"
+          options={{
+            title: 'Azkar',
+            headerBackTitle: 'Azkar',
+          }}
+        />
+        <Stack.Screen
+          name="azkar/tasbeeh"
+          options={{
+            title: 'Tasbeeh',
+            headerBackTitle: 'Back',
+          }}
+        />
+        <Stack.Screen
           name="downloads"
           options={{
             title: 'Audio downloads',
@@ -123,7 +147,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="about"
           options={{
-            title: 'About Iqra',
+            title: 'About Axs Iqra',
             presentation: 'modal',
           }}
         />

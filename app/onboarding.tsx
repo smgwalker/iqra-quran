@@ -85,7 +85,7 @@ export default function OnboardingScreen() {
                 <Text style={[styles.logoMark, { color: c.tint }]}>اقْرَأْ</Text>
               </View>
             </LinearGradient>
-            <Text style={[styles.brand, { color: c.text }]}>Iqra</Text>
+            <Text style={[styles.brand, { color: c.text }]}>Axs Iqra</Text>
             <Text style={[styles.bismillah, { color: c.arabic }]}>بِسْمِ ٱللَّهِ</Text>
             <Text style={[styles.tagline, { color: c.textSecondary }]}>
               {'Read · Listen · Reflect\nA calm Qur’an companion, offline-first.'}

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useSettings } from '@/contexts/SettingsContext';
+import { AZKAR_CATEGORIES, AZKAR_SOURCES, totalDuaCount } from '@/lib/azkar';
 import { STUDY_NOTES } from '@/lib/study';
 import { TRANSLATIONS } from '@/lib/translations';
 
@@ -14,7 +15,7 @@ export default function AboutScreen() {
     <ScrollView
       style={{ flex: 1, backgroundColor: c.background }}
       contentContainerStyle={styles.content}>
-      <Text style={[styles.app, { color: c.tint }]}>Iqra</Text>
+      <Text style={[styles.app, { color: c.tint }]}>Axs Iqra</Text>
       <Text style={[styles.tag, { color: c.textSecondary }]}>
         A calm, offline-first Qur’an reader for iOS & Android.
       </Text>
@@ -22,7 +23,8 @@ export default function AboutScreen() {
       <Section title="Features" color={c}>
         Arabic Uthmani text, multiple English translations, surah & juz navigation, continue
         reading, bookmarks, local search, ayah audio (stream or offline download), continuous
-        playback, word-by-word & tafsir panels, Amiri / Scheherazade fonts, light/dark theme.
+        playback, word-by-word & tafsir panels, Dua & Azkar with repeat counters, tasbeeh counter,
+        Amiri / Scheherazade fonts, light/dark theme.
       </Section>
 
       <Section title="Quran text" color={c}>
@@ -80,6 +82,25 @@ export default function AboutScreen() {
         heuristic (demo). See <Text style={styles.mono}>assets/data/SOURCES.md</Text>.
       </Section>
 
+      <Section title="Dua & Azkar" color={c}>
+        {totalDuaCount()} supplications in {AZKAR_CATEGORIES.length} categories, bundled offline as{' '}
+        <Text style={styles.mono}>assets/data/azkar.json</Text>. Arabic, transliteration, translation,
+        repeat counts and references are copied verbatim from these open datasets:{'\n\n'}
+        {AZKAR_SOURCES.map((s) => (
+          <Text key={s.id}>
+            • <Text style={{ fontWeight: '700' }}>{s.name}</Text>
+            {s.version ? ` v${s.version}` : ''} — {s.license}
+            {'\n'}  Used for: {s.usedFor}
+            {'\n'}  <Text style={styles.mono}>{s.url}</Text>
+            {'\n'}  <Text style={styles.mono}>commit {s.commit.slice(0, 12)}</Text>
+            {'\n\n'}
+          </Text>
+        ))}
+        Hisn al-Muslim chapter numbers are not included in these datasets; each dua shows the
+        hadith / Qur’an reference given by the source. See{' '}
+        <Text style={styles.mono}>assets/data/SOURCES.md</Text>.
+      </Section>
+
       <Section title="Arabic fonts" color={c}>
         • Amiri — SIL Open Font License 1.1{'\n'}
         • Scheherazade New — SIL Open Font License 1.1{'\n'}
@@ -91,16 +112,17 @@ export default function AboutScreen() {
       </Section>
 
       <Section title="Privacy" color={c}>
-        Bookmarks, last-read position, settings, download index, and study cache are stored only on
+        Bookmarks, last-read position, settings, download index, study cache, favorite duas and
+        tasbeeh totals are stored only on
         your device via AsyncStorage / app documents. No account required.
       </Section>
 
       <Section title="Disclaimer" color={c}>
-        Iqra is an independent open-data reader. It is not affiliated with QuranMajeed or any
+        Axs Iqra is an independent open-data reader. It is not affiliated with QuranMajeed or any
         commercial Qur’an app. Always verify important rulings with trusted scholars.
       </Section>
 
-      <Text style={[styles.footer, { color: c.textSecondary }]}>Iqra v1.1.0 · Expo</Text>
+      <Text style={[styles.footer, { color: c.textSecondary }]}>Axs Iqra v1.3.0 · Expo</Text>
     </ScrollView>
   );
 }

@@ -2,7 +2,7 @@ import { Image, StyleSheet, View } from 'react-native';
 
 export function BrandSplash() {
   return (
-    <View style={styles.root} accessibilityLabel="Iqra">
+    <View style={styles.root} accessibilityLabel="Axs Iqra">
       <Image
         source={require('../../assets/images/splash-icon.png')}
         style={styles.logo}

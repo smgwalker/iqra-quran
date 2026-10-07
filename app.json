@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Iqra",
+    "name": "Axs Iqra",
     "slug": "iqra-quran",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "iqra",
@@ -20,7 +20,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.smgwalker.iqra",
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "bundler": "metro",

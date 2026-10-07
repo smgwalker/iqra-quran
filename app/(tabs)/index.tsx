@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EngagementSection } from '@/components/ui/EngagementSection';
+import { AzkarTimeCard } from '@/components/ui/AzkarTimeCard';
 import { FeatureGrid, type FeatureItem } from '@/components/ui/FeatureGrid';
 import { JourneyCard } from '@/components/ui/JourneyCard';
 import { StoryCircle } from '@/components/ui/StoryCircle';
@@ -34,13 +35,15 @@ const STORY_SHORTCUTS: {
   label: string;
   surahId?: number;
   icon?: keyof typeof Ionicons.glyphMap;
-  href?: '/juz' | '/search';
+  href?: '/juz' | '/search' | '/azkar' | '/azkar/tasbeeh';
 }[] = [
   { key: 'fatiha', label: 'Fatiha', surahId: 1 },
   { key: 'yasin', label: 'Yasin', surahId: 36 },
   { key: 'mulk', label: 'Mulk', surahId: 67 },
   { key: 'kahf', label: 'Kahf', surahId: 18 },
   { key: 'rahman', label: 'Rahman', surahId: 55 },
+  { key: 'azkar', label: 'Azkar', icon: 'hand-left-outline', href: '/azkar' },
+  { key: 'tasbeeh', label: 'Tasbeeh', icon: 'ellipse-outline', href: '/azkar/tasbeeh' },
   { key: 'juz', label: 'Juz', icon: 'layers-outline', href: '/juz' },
   { key: 'search', label: 'Search', icon: 'search', href: '/search' },
 ];
@@ -98,6 +101,8 @@ export default function HomeScreen() {
   const features: FeatureItem[] = [
     { key: 'read', label: 'Read Quran', icon: 'book', color: '#0095F6', onPress: () => router.push('/surahs') },
     { key: 'juz', label: 'Juz', icon: 'layers', color: '#5856D6', onPress: () => router.push('/juz') },
+    { key: 'azkar', label: 'Dua & Azkar', icon: 'hand-left', color: '#1B5E3B', onPress: () => router.push('/azkar') },
+    { key: 'tasbeeh', label: 'Tasbeeh', icon: 'ellipse', color: '#C9A227', onPress: () => router.push('/azkar/tasbeeh') },
     { key: 'bookmarks', label: 'Bookmarks', icon: 'bookmark', color: '#F5A623', onPress: () => router.push('/bookmarks') },
     { key: 'search', label: 'Search', icon: 'search', color: '#34C759', onPress: () => router.push('/search') },
     { key: 'downloads', label: 'Downloads', icon: 'cloud-download', color: '#FF2D55', onPress: () => router.push('/downloads') },
@@ -122,7 +127,7 @@ export default function HomeScreen() {
           colors={[c.heroGradientStart, c.heroGradientEnd]}
           style={[styles.hero, { paddingTop: insets.top + 12 }]}>
           <View style={styles.heroTop}>
-            <Text style={styles.brandMark}>Iqra</Text>
+            <Text style={styles.brandMark}>Axs Iqra</Text>
             <Pressable onPress={() => router.push('/about')} hitSlop={12}>
               <Ionicons name="person-circle-outline" size={28} color="rgba(255,255,255,0.85)" />
             </Pressable>
@@ -185,6 +190,8 @@ export default function HomeScreen() {
           </ScrollView>
 
           <FeatureGrid items={features} colorScheme={colorScheme} />
+
+          <AzkarTimeCard colorScheme={colorScheme} />
 
           <JourneyCard streak={streak} colorScheme={colorScheme} onPress={openContinue} />
 

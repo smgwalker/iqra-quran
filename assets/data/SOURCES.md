@@ -46,3 +46,41 @@
 - Other API classes (`ham_wasl`, `laam_shamsiyah`, `madda_*`, etc.) are left uncolored so the on-screen legend matches the reference.
 - **Fallback:** For all other surahs, a lightweight heuristic colors noon-saakin / tanween (ikhfa, idgham, iqlab), qalqala+sukoon, and noon/meem mushaddad (ghunna). This is a demo approximation — not a full tajweed engine.
 - **License note:** Annotations derived from Quran.com public API content for offline demo; not scraped from commercial mushaf apps.
+
+## Dua & Azkar (`azkar.json`)
+Built by `scripts/build-azkar-data.mjs` from two **MIT-licensed** datasets pinned to exact commits.
+Arabic, transliteration, English translation, repeat count, virtue text and reference are copied
+**verbatim**; the script only selects entries and groups them into app categories. No text or
+references were written by hand. License texts: `licenses/MIT-*.txt`.
+
+### 1. Morning and Evening Adhkar DB — Seen Arabic
+- Repo: https://github.com/Seen-Arabic/Morning-And-Evening-Adhkar-DB
+- Commit: `29d7623fede52eca835a789025dfda866e8cfe44` (2026-02-14)
+- File: https://raw.githubusercontent.com/Seen-Arabic/Morning-And-Evening-Adhkar-DB/29d7623fede52eca835a789025dfda866e8cfe44/en.json
+- License: **MIT** — Copyright (c) 2024 Seen Arabic
+- Upstream cites Hisn al-Muslim (Sa'id bin Ali bin Wahf Al-Qahtani) and its sharh as sources.
+- Fields used: `content` → arabic, `transliteration`, `translation`, `count`, `count_description`,
+  `fadl` → virtue, `source` → reference. `type` 0 = morning & evening, 1 = morning only, 2 = evening only.
+- Used for: **Morning azkar** (26), **Evening azkar** (24) — 34 unique entries.
+- Not used: `audio` (hisnmuslim.com URLs, licensing unclear), `hadith_text`, vocabulary notes.
+
+### 2. Dua & Dhikr — fitrahive
+- Repo: https://github.com/fitrahive/dua-dhikr (package `@fitrahive/dua-dhikr` v0.1.3)
+- Commit: `f42f895f914319a844c3e3c2279483cae060ea19` (2025-11-29)
+- Files: `https://raw.githubusercontent.com/fitrahive/dua-dhikr/f42f895f914319a844c3e3c2279483cae060ea19/data/dua-dhikr/<category>/en.json`
+  (`daily-dua`, `selected-dua`, `dhikr-after-salah`, `morning-dhikr`)
+- License: **MIT** — Copyright (c) 2023 Fitrahive
+- Fields used: `title`, `arabic`, `latin` → transliteration, `translation`, `notes` (count wording),
+  `benefits`/`fawaid` → virtue, `source` → reference.
+- Repeat count is parsed from `notes` (e.g. "Read 33x" → 33); entries without a count in `notes` default to 1.
+- Used for: After salah (13), Before sleep (1), Waking up (1), Entering & leaving home (4),
+  Eating & drinking (3), Travel (4), Distress & anxiety (5), Forgiveness (4), Quranic duas (4),
+  Mosque/wudu/adhan (5), Clothing (2), Rain & wind (4), Restroom (2), Sneezing (3), Fasting (1),
+  Selected duas (5).
+- Skipped as duplicate: `selected-dua[6]` (same Arabic as `daily-dua[30]`, Abu Dawud 1555).
+
+### Known gaps
+- Neither dataset includes Hisn al-Muslim chapter/dua numbers, so none are shown.
+- "Before sleep" and "Waking up" have one entry each; "Eating & drinking" has no drinking-specific dua.
+- Tasbeeh presets reuse the after-salah Tasbih/Tahmid/Takbir Arabic from fitrahive; preset targets
+  (33/33/34) are app settings, not dataset values.
