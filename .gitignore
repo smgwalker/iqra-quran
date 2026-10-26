@@ -37,3 +37,4 @@ yarn-error.*
 credentials/
 *.keystore
 *.jks
+dist-web/

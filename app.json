@@ -24,8 +24,12 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "single",
+      "favicon": "./assets/images/favicon.png",
+      "name": "Axs Iqra",
+      "shortName": "Axs Iqra",
+      "themeColor": "#F7F4EC",
+      "backgroundColor": "#F7F4EC"
     },
     "plugins": [
       "expo-router",
