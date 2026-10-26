@@ -3,5 +3,14 @@
   "buildCommand": "npx expo export --platform web --output-dir dist-web && node scripts/web-postexport.js dist-web",
   "outputDirectory": "dist-web",
   "framework": null,
-  "rewrites": [{ "source": "/((?!_expo/|assets/|.*\\..*).*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/assets/node_modules/:path*",
+      "destination": "/assets/nm/:path*"
+    },
+    {
+      "source": "/((?!_expo/|assets/|.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
